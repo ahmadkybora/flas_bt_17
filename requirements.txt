@@ -10,6 +10,7 @@ Flask==2.1.2
 Flask-Cors==3.0.10
 flask-marshmallow==0.14.0
 Flask-Migrate==3.1.0
+Flask-MySQLdb==1.0.1
 Flask-SQLAlchemy==2.5.1
 greenlet==1.1.2
 idna==3.3
@@ -20,6 +21,7 @@ Jinja2==3.1.2
 Mako==1.2.0
 MarkupSafe==2.1.1
 marshmallow==3.15.0
+mysqlclient==2.1.0
 packaging==21.3
 pyparsing==3.0.9
 python-telegram-bot==13.11
