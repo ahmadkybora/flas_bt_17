@@ -9,7 +9,7 @@ from flask_marshmallow import Marshmallow
 import datetime
 from flask_cors import CORS
 from requests import request
-from telegram.ext import Updater, CallbackContext, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CallbackContext, CommandHandler, MessageHandler, Filters, ConversationHandler
 from telegram import Update
 from telegram import (
     InlineKeyboardMarkup, 
@@ -24,6 +24,8 @@ from app.Controllers.Panel.UserController import index, store, show, update, del
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
+
+PHOTO, FIRSTNAME, LASTNAME, LOCATION, BIO = range(5)
 
 logger = logging.getLogger(__name__)
 token = "2016260844:AAGwWwI6ZLA7cLUNNcAbbFz2W84wkJebZyo"
@@ -54,7 +56,7 @@ app.register_blueprint(userRoute, url_prefix='/')
 # def index():
 #     return "a"
 
-def start(update, context):
+def start1(update, context):
     # markup = InlineKeyboardMarkup(
     #     [
     #         [InlineKeyboardButton('callbackData')], 
@@ -144,11 +146,109 @@ def echo(update, context):
     update.message.reply_text('چی میگی')
     # update.message.reply_text('h', reply_markup=ReplyKeyboardRemove)
 
+def start(update, context):
+    user = update.message.from_user
+    logger.info("first_name of user is %s", user.first_name)
+    logger.info("last_name of user is %s", user.last_name)
+    update.message.reply_text(
+        'send me a photo of yourself, '
+        'so that we can register you, or send /skip if you don\'t want to.',
+        reply_markup=ReplyKeyboardRemove(),
+    )
+    return PHOTO
+
+def first_name(update, context):
+    first_name = update.message.text
+    logger.info("your first_name is %s", first_name)
+    update.message.reply_text(
+        'please insert your last name'
+    )
+    return LASTNAME
+
+def last_name(update, context):
+    last_name = update.message.text
+    logger.info("your last_name is %s", last_name)
+    update.message.reply_text(
+        'perfect . almost complete,Now send me your location, ' 'or send /skip if you don\'t want to.'
+    )
+    return LOCATION
+
+def photo(update, context):
+    user = update.message.from_user
+    photo_file = update.message.photo[-1].get_file()
+    photo_file.download('user_photo.jpg')
+    logger.info("photo of %s: %s", user.first_name, 'user_photo.jpg')
+    update.message.reply_text(
+        'please insert your first name'
+    )
+    return FIRSTNAME
+
+def skip_photo(update, context):
+    user = update.message.from_user
+    logger.info("User %s did not send a photo", user.first_name)
+    update.message.reply_text(
+        'ok no problem! now, send me your location please, ' 'or send /skip'
+    )
+    return LOCATION
+
+def location(update, context):
+    user = update.message.from_user
+    user_location = update.message.location
+    logger.info("location of %s: %f / %f", user.first_name, user_location.latitude, user_location.longitude
+    )
+    update.message.reply_text(
+        'ok, we will take this into conversation and notify' 'At last /skip'
+    )
+    return BIO
+
+def skip_location(update, context):
+    user = update.message.from_user
+    logger.info("name of user is %s", user.first_name)
+    update.message.reply_text(
+        'ok no problem! At Last'
+    )
+    return BIO
+
+def bio(update, context):
+    user = update.message.from_user
+    logger.info("review by %s: %s", user.first_name, update.message.text)
+    update.message.reply_text(
+        'thank you'
+    )
+    return ConversationHandler.END
+
+def cancel(update, context):
+    user = update.message.from_user
+    logger.info("name of user is %s", user.first_name)
+    update.message.reply_text(
+        'send me a photo of yourself, '
+        'so that we can register you, or send /skip if you don\'t want to.',
+        reply_markup=ReplyKeyboardRemove(),
+    )
+    return ConversationHandler.END
+
 def main():
     updater = Updater(token, use_context=True)
     dispatcher = updater.dispatcher
 
-    dispatcher.add_handler(CommandHandler("start", start))
+    conv_handler = ConversationHandler(
+        entry_points=[CommandHandler("start", start)],
+        states={
+            PHOTO: [MessageHandler(Filters.photo, photo), CommandHandler('skip', skip_photo)],
+            FIRSTNAME: [MessageHandler(Filters.text, first_name)],
+            LASTNAME: [MessageHandler(Filters.text, last_name)],
+            LOCATION: [
+                MessageHandler(Filters.location, location),
+                CommandHandler('skip', skip_location),
+            ],
+            BIO: [MessageHandler(Filters.text & ~Filters.command, bio)],
+        },
+        fallbacks = [CommandHandler('cancel', cancel)],
+    )
+
+    dispatcher.add_handler(conv_handler)
+
+    # dispatcher.add_handler(CommandHandler("start", start))
 
     dispatcher.add_handler(MessageHandler(Filters.text("ورود"), login))
     dispatcher.add_handler(MessageHandler(Filters.text("ثبت نام"), register))
