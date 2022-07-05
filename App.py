@@ -25,7 +25,7 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
-PHOTO, FIRSTNAME, LASTNAME, LOCATION, BIO = range(5)
+PHOTO, FIRSTNAME, LASTNAME, MOBILE, LOCATION, BIO = range(6)
 
 logger = logging.getLogger(__name__)
 token = "2016260844:AAGwWwI6ZLA7cLUNNcAbbFz2W84wkJebZyo"
@@ -169,9 +169,17 @@ def last_name(update, context):
     last_name = update.message.text
     logger.info("your last_name is %s", last_name)
     update.message.reply_text(
-        'perfect . almost complete,Now send me your location, ' 'or send /skip if you don\'t want to.'
+        'please insert your phone number'
     )
-    return LOCATION
+    return MOBILE
+
+def phone_number(update, context):
+    first_name = update.message.text
+    logger.info("your first_name is %s", first_name)
+    update.message.reply_text(
+        'please insert your last name'
+    )
+    return LASTNAME
 
 def photo(update, context):
     user = update.message.from_user
@@ -237,6 +245,7 @@ def main():
             PHOTO: [MessageHandler(Filters.photo, photo), CommandHandler('skip', skip_photo)],
             FIRSTNAME: [MessageHandler(Filters.text, first_name)],
             LASTNAME: [MessageHandler(Filters.text, last_name)],
+            MOBILE: [MessageHandler(Filters.text, phone_number)],
             LOCATION: [
                 MessageHandler(Filters.location, location),
                 CommandHandler('skip', skip_location),
