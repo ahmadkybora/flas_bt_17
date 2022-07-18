@@ -1,4 +1,4 @@
-from asyncio.windows_events import NULL
+# from asyncio.windows_events import NULL
 from flask_migrate import Migrate
 from routes.panel.userRoute import userRoute
 from config.database import db, app
@@ -17,7 +17,8 @@ from telegram import (
     InlineKeyboardButton, 
     ReplyKeyboardMarkup, 
     ReplyKeyboardRemove, 
-    KeyboardButton
+    KeyboardButton,
+    Contact
 )
 from app.Models.User import User, user_schema, users_schema
 
@@ -46,7 +47,7 @@ isUser = []
 
 ages = [
     [
-        InlineKeyboardButton("18", callback_data="18"), 
+        InlineKeyboardButton("18", callback_data=str("18")), 
         InlineKeyboardButton("19", callback_data="19"), 
         InlineKeyboardButton("20", callback_data="20"), 
         InlineKeyboardButton("21", callback_data="21"), 
@@ -167,14 +168,21 @@ def last_name(update, context):
     return MOBILE
 
 
-    db.session.add(user)
-    db.session.commit()
+    # db.session.add(user)
+    # db.session.commit()
 
 def phone_number(update, context):
+    # contact = update.effective_message.contact
+    # phone = contact.phone_number
+    # phone = update.message.contact.phone_number
+    # phone = update.effective_message.contact
+    # contact = update.effective_message
+    # phone_number = Contact(contact)
     phone_number = update.message.text
     user.last_name = phone_number
+    user.mobile = phone_number
     isUser.append(phone_number)
-    logger.info("your phone_number is %s", first_name)
+    logger.info("your phone_number is %s", phone_number)
     reply_markup = InlineKeyboardMarkup(ages)
     update.message.reply_text(validation['age'], reply_markup=reply_markup)
     return AGE
@@ -199,7 +207,10 @@ def phone_number(update, context):
 
 def age(update, context) -> None:
     query = update.callback_query
-    query.answer()
+    # query.answer()
+    user.age = query
+    isUser.append(query)
+    logger.info("your age is %s", age)
     reply_markup = InlineKeyboardMarkup(states)
     query.edit_message_text(validation['state'], reply_markup=reply_markup)
 
