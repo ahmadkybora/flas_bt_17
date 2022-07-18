@@ -10,7 +10,7 @@ from flask_marshmallow import Marshmallow
 import datetime
 from flask_cors import CORS
 from requests import request
-from telegram.ext import Updater, CallbackContext, CallbackQueryHandler, CommandHandler, MessageHandler, Filters, ConversationHandler
+from telegram.ext import Updater, CallbackContext, CallbackQueryHandler, CommandHandler, MessageHandler, Filters, ConversationHandler, ContextTypes
 from telegram import Update
 from telegram import (
     InlineKeyboardMarkup, 
@@ -26,7 +26,7 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
-FIRSTNAME, LASTNAME, MOBILE, AGE, STATE, CITY, PHOTO, BIO = range(8)
+BUTTON, FIRSTNAME, LASTNAME, MOBILE, AGE, STATE, CITY, PHOTO, BIO = range(9)
 
 validation = {
     'first_name': 'لطفا نام خود را وارد کنید',
@@ -143,12 +143,38 @@ cities = [
         InlineKeyboardButton("43", callback_data="43"), 
     ],
 ]
-def start(update, context):
-    username = update.message.from_user
-    user.username = username
-    logger.info("Name of User is %s", username)
-    update.message.reply_text(validation['first_name'])
-    return FIRSTNAME
+def start(update: Update, context: ContextTypes) -> None:
+    """Sends a message with three inline buttons attached."""
+    # keyboard = [
+    #     [
+    #         InlineKeyboardButton("Option 1", callback_data="1"),
+    #         InlineKeyboardButton("Option 2", callback_data="2"),
+    #     ],
+    #     [InlineKeyboardButton("Option 3", callback_data="3")],
+    # ]
+
+    # reply_markup = InlineKeyboardMarkup(keyboard)
+    reply_markup = InlineKeyboardMarkup(ages)
+
+    update.message.reply_text(validation['age'], reply_markup=reply_markup)
+
+
+def button(update: Update, context: ContextTypes) -> None:
+    """Parses the CallbackQuery and updates the message text."""
+    query = update.callback_query
+
+    # CallbackQueries need to be answered, even if no notification to the user is needed
+    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
+    query.answer()
+    logger.info("your age is %s", {query.data})
+    query.edit_message_text(text=f"Selected option: {query.data}")
+
+# def start(update, context):
+#     username = update.message.from_user
+#     user.username = username
+#     logger.info("Name of User is %s", username)
+#     update.message.reply_text(validation['first_name'])
+#     return FIRSTNAME
 
 def first_name(update, context):
     first_name = update.message.text
@@ -207,8 +233,8 @@ def phone_number(update, context):
 
 def age(update, context) -> None:
     query = update.callback_query
-    # query.answer()
-    user.age = query
+    query.answer()
+    user.age = query.data
     isUser.append(query)
     logger.info("your age is %s", age)
     reply_markup = InlineKeyboardMarkup(states)
@@ -325,6 +351,9 @@ def main():
     updater = Updater(token, use_context=True)
     dispatcher = updater.dispatcher
 
+    dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CallbackQueryHandler(button))
+
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
         states={
@@ -334,6 +363,7 @@ def main():
             LASTNAME: [MessageHandler(Filters.text, last_name)],
             MOBILE: [MessageHandler(Filters.text, phone_number)],
             AGE: [CallbackQueryHandler(age)],
+            BUTTON: [CallbackQueryHandler(button)],
             # LOCATION: [
             #     MessageHandler(Filters.location, location),
             #     CommandHandler('skip', skip_location),
