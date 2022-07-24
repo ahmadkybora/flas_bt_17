@@ -1,3 +1,4 @@
+# from asyncio.windows_events import NULL
 from flask_migrate import Migrate
 from routes.panel.userRoute import userRoute
 from config.database import db, app
@@ -142,11 +143,35 @@ cities = [
         InlineKeyboardButton("43", callback_data="43"), 
     ],
 ]
+def start(update: Update, context: ContextTypes) -> None:
+    """Sends a message with three inline buttons attached."""
+    # keyboard = [
+    #     [
+    #         InlineKeyboardButton("Option 1", callback_data="1"),
+    #         InlineKeyboardButton("Option 2", callback_data="2"),
+    #     ],
+    #     [InlineKeyboardButton("Option 3", callback_data="3")],
+    # ]
+
+    # reply_markup = InlineKeyboardMarkup(keyboard)
+    reply_markup = InlineKeyboardMarkup(ages)
+
+    update.message.reply_text(validation['age'], reply_markup=reply_markup)
+
+
+def button(update: Update, context: ContextTypes) -> None:
+    """Parses the CallbackQuery and updates the message text."""
+    query = update.callback_query
+
+    # CallbackQueries need to be answered, even if no notification to the user is needed
+    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
+    query.answer()
+    logger.info("your age is %s", {query.data})
+    query.edit_message_text(text=f"Selected option: {query.data}")
 
 def start(update, context):
     username = update.message.from_user
-    user.user_info = username
-    user.username = username.username
+    user.username = username
     logger.info("Name of User is %s", username)
     update.message.reply_text(validation['first_name'])
     return FIRSTNAME
@@ -168,14 +193,44 @@ def last_name(update, context):
     update.message.reply_text(validation['mobile'])
     return MOBILE
 
+
+    # db.session.add(user)
+    # db.session.commit()
+
 def phone_number(update, context):
+    # contact = update.effective_message.contact
+    # phone = contact.phone_number
+    # phone = update.message.contact.phone_number
+    # phone = update.effective_message.contact
+    # contact = update.effective_message
+    # phone_number = Contact(contact)
     phone_number = update.message.text
-    user.phone_number = phone_number
+    user.last_name = phone_number
+    user.mobile = phone_number
     isUser.append(phone_number)
     logger.info("your phone_number is %s", phone_number)
     reply_markup = InlineKeyboardMarkup(ages)
     update.message.reply_text(validation['age'], reply_markup=reply_markup)
+    
     return AGE
+
+    # age = ReplyKeyboardMarkup(
+    #     [
+    #         [InlineKeyboardButton(1), InlineKeyboardButton(2), InlineKeyboardButton(3), InlineKeyboardButton(4)],
+    #     ] 
+    # )
+    # inlineMarkup = InlineKeyboardMarkup(age)
+    # update.message.reply_text(age)
+    # update.effective_message.reply_text('لطفا یکی را انتخاب کنید', reply_markup=inlineMarkup)
+
+    # inlineKeys = [
+    #     [InlineKeyboardButton('ثبت نام', url='google.com', callback_data='1'), InlineKeyboardButton('ورود', url='google.com')], 
+    #     [InlineKeyboardButton('موقعیت', url='google.com'), InlineKeyboardButton('زمان', url='google.com')], 
+    #     [InlineKeyboardButton('درباره', url='google.com'), InlineKeyboardButton('خروج', url='google.com')], 
+    # ]
+    # inlineMarkup = InlineKeyboardMarkup(inlineKeys)
+    # update.effective_message.reply_text('121', reply_markup=inlineMarkup)
+
 
 def age(update, context) -> None:
     query = update.callback_query
@@ -185,11 +240,26 @@ def age(update, context) -> None:
     logger.info("your age is %s", {query.data})
     reply_markup = InlineKeyboardMarkup(states)
     query.edit_message_text(validation['state'], reply_markup=reply_markup)
+
+    # query = update.callback_query
+    # query.answer()
+
+    # age = update.callback_query.data
+    # age.answer(f'selected: {age.data}')
+    # age.answer()
+    # age.edit_message_text(text=f"Selected option: {age.data}")
+
+    # user.last_name = phone_number
+    # isUser.append(query)
+    # logger.info("your age is %s", query)
+    # reply_markup = InlineKeyboardMarkup(states)
+    # update.message.reply_text(validation['state'], reply_markup=reply_markup)
     return STATE
 
 def state(update, context):
     query = update.callback_query
     query.answer()
+    # user.last_name = phone_number
     user.state = {query.data}
     isUser.append(query.data)
     logger.info("your state is %s", {query.data})
@@ -200,6 +270,8 @@ def state(update, context):
 def city(update, context):
     query = update.callback_query
     query.answer()
+    # city = update.message.text
+    # user.last_name = phone_number
     user.city = {query.data}
     isUser.append(query.data)
     logger.info("your city is %s", {query.data})
@@ -207,14 +279,12 @@ def city(update, context):
     return PHOTO
 
 def photo(update, context):
-    # user = update.message.from_user
+    user = update.message.from_user
     photo_file = update.message.photo[-1].get_file()
     photo_file.download('user_photo.jpg')
-    logger.info(user)
-    db.session.add(user)
-    db.session.commit()
-    # logger.info("your FirstName is %s, and your LastName is %s, and your PhoneNumber is %s, and your Age is %s, and your State is %s, and your City is %s", 
-    # user.first_name, user.last_name, user.phone_number, user.age, user.state, user.city)
+    logger.info("photo of %s: %s", user.first_name, 'user_photo.jpg')
+    logger.info("your FirstName is %s, and your LastName is %s, and your PhoneNumber is %s, and your Age is %s, and your State is %s, and your City is %s", 
+    user.first_name, user.last_name, user.phone_number, user.age, user.state, user.city)
     update.message.reply_text(
         'thank you for login'
     )
@@ -239,6 +309,50 @@ def cancel(update, context):
     )
     return ConversationHandler.END
 
+# def skip_photo(update, context):
+#     user = update.message.from_user
+#     logger.info("User %s did not send a photo", user.first_name)
+#     update.message.reply_text(
+#         'ok no problem! now, send me your location please, ' 'or send /skip'
+#     )
+#     return LOCATION
+
+# def location(update, context):
+#     user = update.message.from_user
+#     user_location = update.message.location
+#     logger.info("location of %s: %f / %f", user.first_name, user_location.latitude, user_location.longitude
+#     )
+#     update.message.reply_text(
+#         'ok, we will take this into conversation and notify' 'At last /skip'
+#     )
+#     return BIO
+
+# def skip_location(update, context):
+#     user = update.message.from_user
+#     logger.info("name of user is %s", user.first_name)
+#     update.message.reply_text(
+#         'ok no problem! At Last'
+#     )
+#     return BIO
+
+# def bio(update, context):
+#     user = update.message.from_user
+#     logger.info("review by %s: %s", user.first_name, update.message.text)
+#     update.message.reply_text(
+#         'thank you'
+#     )
+#     return ConversationHandler.END
+
+# def cancel(update, context):
+#     user = update.message.from_user
+#     logger.info("name of user is %s", user.first_name)
+#     update.message.reply_text(
+#         'send me a photo of yourself, '
+#         'so that we can register you, or send /skip if you don\'t want to.',
+#         reply_markup=ReplyKeyboardRemove(),
+#     )
+#     return ConversationHandler.END
+
 def echo(update, context):
     update.message.reply_text('چی میگی')
 
@@ -246,9 +360,13 @@ def main():
     updater = Updater(token, use_context=True)
     dispatcher = updater.dispatcher
 
+    # dispatcher.add_handler(CommandHandler("start", start))
+    # dispatcher.add_handler(CallbackQueryHandler(button))
+
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
         states={
+            # PHOTO: [MessageHandler(Filters.photo, photo), CommandHandler('skip', skip_photo)],
             FIRSTNAME: [MessageHandler(Filters.text, first_name)],
             LASTNAME: [MessageHandler(Filters.text, last_name)],
             MOBILE: [MessageHandler(Filters.text, phone_number)],
@@ -256,6 +374,11 @@ def main():
             STATE: [CallbackQueryHandler(state)],
             CITY: [CallbackQueryHandler(city)],
             PHOTO: [MessageHandler(Filters.photo, photo)],
+            # BUTTON: [CallbackQueryHandler(button)],
+            # LOCATION: [
+            #     MessageHandler(Filters.location, location),
+            #     CommandHandler('skip', skip_location),
+            # ],
             BIO: [MessageHandler(Filters.text & ~Filters.command, bio)],
         },
         fallbacks = [CommandHandler('cancel', cancel)],

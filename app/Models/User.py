@@ -1,24 +1,27 @@
 from config.database import db, ma
+
 class User(db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key = True)
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
     username = db.Column(db.String(100))
-    mobile = db.Column(db.String(100))
+    phone_number = db.Column(db.String(100))
     age = db.Column(db.String(100))
     state = db.Column(db.String(100))
     city = db.Column(db.String(100))
-
+    user_info = db.Column(db.String(100))
+    
     def to_json(self):
         return {
             'first_name': self.first_name,
             'last_name': self.last_name,
             'username': self.username,
-            'mobile': self.mobile,
+            'phone_number': self.phone_number,
             'age': self.age,
             'state': self.state,
             'city': self.city,
+            'user_info': self.user_info
         }
 
 # class User(Schema):
@@ -46,7 +49,7 @@ class User(db.Model):
 
 class UserSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'first_name', 'last_name', 'username', 'email')
+        fields = ('id', 'first_name', 'last_name', 'username', 'phone_number', 'age', 'state', 'city', 'user_info')
 
 user_schema = UserSchema() 
 users_schema = UserSchema(many=True)
