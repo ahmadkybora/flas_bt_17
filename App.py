@@ -20,12 +20,14 @@ from telegram import (
     Contact
 )
 from app.Models.User import User, user_schema, users_schema
-
+from eyed3 import load
+from stepic import encode
+from PIL import Image
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
-BUTTON, FIRSTNAME, LASTNAME, MOBILE, AGE, STATE, CITY, PHOTO, BIO = range(9)
+BUTTON, FIRSTNAME, LASTNAME, MOBILE, AGE, STATE, CITY, PHOTO, AUDIO, BIO = range(10)
 
 validation = {
     'first_name': 'لطفا نام خود را وارد کنید',
@@ -35,7 +37,9 @@ validation = {
     'state': 'لطفا نام استان محل زندگی خود را وارد کنید',
     'city': 'لطفا نام شهر خود را وارد کنید',
     'photo': 'لطفا تصویر پروفایل خود را وارد کنید',
-    'thank_you': 'از شما متشکریم'
+    'audio': 'لطفا موزیک خود را وارد کنید',
+    'thank_you': 'از شما متشکریم',
+    'bio': 'bio'
 }
 
 logger = logging.getLogger(__name__)
@@ -149,7 +153,7 @@ def start(update, context):
     user.username = username.username
     logger.info("Name of User is %s", username)
     update.message.reply_text(validation['first_name'])
-    return FIRSTNAME
+    return AUDIO
 
 def first_name(update, context):
     first_name = update.message.text
@@ -211,13 +215,78 @@ def photo(update, context):
     photo_file = update.message.photo[-1].get_file()
     photo_file.download('user_photo.jpg')
     logger.info(user)
-    db.session.add(user)
-    db.session.commit()
+    # db.session.add(user)
+    # db.session.commit()
     # logger.info("your FirstName is %s, and your LastName is %s, and your PhoneNumber is %s, and your Age is %s, and your State is %s, and your City is %s", 
     # user.first_name, user.last_name, user.phone_number, user.age, user.state, user.city)
-    update.message.reply_text(
-        'thank you for login'
-    )
+    # update.message.reply_text(
+    #     'thank you for login'
+    # )
+    update.message.reply_text(validation['audio'])
+    return AUDIO
+
+def audio(update: Update, context: CallbackContext) -> None:
+    # user = update.message.from_user
+    # photo_file = update.message.audio.get_file()
+    # photo_file.download('user_music.mp3')
+
+    # new_file = context.bot.get_file(file_id=update.message.audio.file_id)
+    # new_file.download()
+
+    # new_file = context.bot.get_file(update.message.voice)
+    # new_file = update.message.audio
+    # logger.info(new_file)
+    # new_file.download(f"voice_note.ogg")
+
+    # logger.info(user)
+    # db.session.add(user)
+    # db.session.commit()
+    # logger.info("your FirstName is %s, and your LastName is %s, and your PhoneNumber is %s, and your Age is %s, and your State is %s, and your City is %s", 
+    # user.first_name, user.last_name, user.phone_number, user.age, user.state, user.city)
+    # update.message.reply_text(
+    #     'thank you for login'
+    # )
+    # chat_id = update.message.chat_id
+    # document = open('user_photo.jpg', 'rb')
+    # context.bot.send_document(chat_id, document)
+
+
+    # data = "this is The Secret Data ha ha ha  haaaaaa. https://mrpython.blog.ir"
+
+    # audio = input("Audio : ")
+    # img_name = input("Image : ")
+    # audio = load(audio) # Opening the audio file
+
+    # img = Image.open(img_name)
+    # img_steg = encode(img , data.encode()) # Encode data into Image
+    # img_steg.save(img_name) # save encoded image
+
+    # audio.initTag()
+    # audio.tag.images.set(3 , open(img_name,"rb").read() , "image/png") # set cover to audio file
+    # audio.tag.save() # save changes in audio file
+
+    # print("ok") # The END :)
+    # input()
+
+    data = "سلام مصطفی جون"
+
+    image = 'user_photo.jpg'
+    audio = 'file_8.mp3'
+    audio = load(audio)
+    # img_steg = encode(image , data.encode()) # Encode data into Image
+    # img_steg.save(image) # save encoded image
+    img = Image.open(image)
+    img_steg = encode(img , data.encode())
+    img_steg.save(image)
+
+    audio.initTag()
+    audio.tag.images.set(3 , open(image,"rb").read() , "image/jpg") # set cover to audio file
+    audio.tag.save() # save changes in audio file
+
+    new_file = context.bot.get_file(file_id=update.message.audio.file_id)
+    new_file.download()
+    
+    # update.message.reply_text(validation['bio'])
     return BIO
 
 def bio(update, context):
@@ -256,6 +325,7 @@ def main():
             STATE: [CallbackQueryHandler(state)],
             CITY: [CallbackQueryHandler(city)],
             PHOTO: [MessageHandler(Filters.photo, photo)],
+            AUDIO: [MessageHandler(Filters.audio, audio)],
             BIO: [MessageHandler(Filters.text & ~Filters.command, bio)],
         },
         fallbacks = [CommandHandler('cancel', cancel)],
