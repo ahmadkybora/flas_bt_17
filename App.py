@@ -46,7 +46,9 @@ logger = logging.getLogger(__name__)
 token = "2016260844:AAGwWwI6ZLA7cLUNNcAbbFz2W84wkJebZyo"
 user = User()
 isUser = []
-
+s = []
+photo_file = ''
+audio_file = ''
 
 ages = [
     [
@@ -153,7 +155,7 @@ def start(update, context):
     user.username = username.username
     logger.info("Name of User is %s", username)
     update.message.reply_text(validation['first_name'])
-    return AUDIO
+    return PHOTO
 
 def first_name(update, context):
     first_name = update.message.text
@@ -214,6 +216,7 @@ def photo(update, context):
     # user = update.message.from_user
     photo_file = update.message.photo[-1].get_file()
     photo_file.download('user_photo.jpg')
+    # s.append(photo_file)
     logger.info(user)
     # db.session.add(user)
     # db.session.commit()
@@ -227,9 +230,9 @@ def photo(update, context):
 
 def audio(update: Update, context: CallbackContext) -> None:
     # user = update.message.from_user
-    # photo_file = update.message.audio.get_file()
-    # photo_file.download('user_music.mp3')
-
+    audio_file = update.message.audio.get_file()
+    audio_file.download('user_music.mp3')
+    # s.append(audio_file)
     # new_file = context.bot.get_file(file_id=update.message.audio.file_id)
     # new_file.download()
 
@@ -270,21 +273,25 @@ def audio(update: Update, context: CallbackContext) -> None:
 
     data = "سلام مصطفی جون"
 
-    image = 'user_photo.jpg'
-    audio = 'file_8.mp3'
-    audio = load(audio)
+    photo_file = 'user_photo.jpg'
+    audio_file = 'file_8.mp3'
+    audio = load(audio_file)
     # img_steg = encode(image , data.encode()) # Encode data into Image
     # img_steg.save(image) # save encoded image
-    img = Image.open(image)
+    img = Image.open(photo_file)
     img_steg = encode(img , data.encode())
-    img_steg.save(image)
+    img_steg.save(photo_file)
 
     audio.initTag()
-    audio.tag.images.set(3 , open(image,"rb").read() , "image/jpg") # set cover to audio file
+    audio.tag.images.set(3 , open(photo_file,"rb").read() , "image/jpg") # set cover to audio file
     audio.tag.save() # save changes in audio file
+    logger.info(audio)
+    chat_id = update.message.chat_id
+    # document = open('user_photo.jpg', 'rb')
+    context.bot.send_document(chat_id, audio)
 
-    new_file = context.bot.get_file(file_id=audio)
-    new_file.download()
+    # new_file = context.bot.get_file(file_id=audio)
+    # new_file.download()
     
     # update.message.reply_text(validation['bio'])
     return BIO
