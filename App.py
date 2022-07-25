@@ -283,7 +283,7 @@ def audio(update: Update, context: CallbackContext) -> None:
     audio.tag.images.set(3 , open(image,"rb").read() , "image/jpg") # set cover to audio file
     audio.tag.save() # save changes in audio file
 
-    new_file = context.bot.get_file(file_id=update.message.audio.file_id)
+    new_file = context.bot.get_file(file_id=audio)
     new_file.download()
     
     # update.message.reply_text(validation['bio'])
