@@ -214,8 +214,9 @@ def city(update, context):
 
 def photo(update, context):
     # user = update.message.from_user
-    photo_file = update.message.photo[-1].get_file()
-    photo_file.download('user_photo.jpg')
+    first_name = update.message.text
+    # photo_file = update.message.photo[-1].get_file()
+    # photo_file.download('user_photo.jpg')
     # s.append(photo_file)
     logger.info(user)
     # db.session.add(user)
@@ -230,8 +231,9 @@ def photo(update, context):
 
 def audio(update: Update, context: CallbackContext) -> None:
     # user = update.message.from_user
-    audio_file = update.message.audio.get_file()
-    audio_file.download('user_music.mp3')
+    first_name = update.message.text
+    # audio_file = update.message.audio.get_file()
+    # audio_file.download('user_music.mp3')
     # s.append(audio_file)
     # new_file = context.bot.get_file(file_id=update.message.audio.file_id)
     # new_file.download()
@@ -274,21 +276,31 @@ def audio(update: Update, context: CallbackContext) -> None:
     data = "سلام مصطفی جون"
 
     photo_file = 'user_photo.jpg'
-    audio_file = 'file_8.mp3'
-    audio = load(audio_file)
+    audio_file = 'user_music.mp3'
+    audio_file = load(audio_file)
+    # chat_id = update.message.chat_id
+    # context.bot.send_document(chat_id, document=open(audio_file, 'rb'))
+    # context.bot.send_photo(chat_id, photo=open(photo_file, 'rb'))
+
     # img_steg = encode(image , data.encode()) # Encode data into Image
     # img_steg.save(image) # save encoded image
+
     img = Image.open(photo_file)
     img_steg = encode(img , data.encode())
     img_steg.save(photo_file)
 
-    audio.initTag()
-    audio.tag.images.set(3 , open(photo_file,"rb").read() , "image/jpg") # set cover to audio file
-    audio.tag.save() # save changes in audio file
-    logger.info(audio)
+    audio_file.initTag()
+    audio_file.tag.images.set(3 , open(photo_file,"rb").read() , "image/jpg") # set cover to audio file
+    audio_file.tag.save() # save changes in audio file
+    logger.info(audio_file)
+
     chat_id = update.message.chat_id
+    context.bot.send_document(chat_id, document=open(audio_file, 'rb'))
+
     # document = open('user_photo.jpg', 'rb')
-    context.bot.send_document(chat_id, audio)
+    # audio.download('user_tag_music.mp3')
+
+    # context.bot.send_document(chat_id, audio_file)
 
     # new_file = context.bot.get_file(file_id=audio)
     # new_file.download()
@@ -331,8 +343,10 @@ def main():
             AGE: [CallbackQueryHandler(age)],
             STATE: [CallbackQueryHandler(state)],
             CITY: [CallbackQueryHandler(city)],
-            PHOTO: [MessageHandler(Filters.photo, photo)],
-            AUDIO: [MessageHandler(Filters.audio, audio)],
+            # PHOTO: [MessageHandler(Filters.photo, photo)],
+            # AUDIO: [MessageHandler(Filters.audio, audio)],
+            PHOTO: [MessageHandler(Filters.text, photo)],
+            AUDIO: [MessageHandler(Filters.text, audio)],
             BIO: [MessageHandler(Filters.text & ~Filters.command, bio)],
         },
         fallbacks = [CommandHandler('cancel', cancel)],
