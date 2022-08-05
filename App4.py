@@ -279,7 +279,7 @@ def audio(update: Update, context: CallbackContext) -> None:
 
     photo_file = 'user_photo.jpg'
     audio_file = 'user_music.mp3'
-    # audio_file = load(audio_file)
+    audio_file = load(audio_file)
     # chat_id = update.message.chat_id
     # context.bot.send_document(chat_id, document=open(audio_file, 'rb'))
     # context.bot.send_photo(chat_id, photo=open(photo_file, 'rb'))
@@ -287,35 +287,19 @@ def audio(update: Update, context: CallbackContext) -> None:
     # img_steg = encode(image , data.encode()) # Encode data into Image
     # img_steg.save(image) # save encoded image
 
-    # img = Image.open(photo_file)
-    # img_steg = encode(img , data.encode())
-    # img_steg.save(photo_file)
+    img = Image.open(photo_file)
+    img_steg = encode(img , data.encode())
+    img_steg.save(photo_file)
 
     # audio_file.initTag()
     # audio_file.tag.images.set(3 , open(photo_file,"rb").read() , "image/jpg") # set cover to audio file
     # audio_file.tag.save() # save changes in audio file
 
-    # audio_file = MP3(audio_file, ID3=ID3)
-    # audio_file.add_tags()
+    audio_file = MP3(audio_file, ID3=ID3)
+    audio_file.add_tags()
 
-    audio = ID3(audio_file)
-    audio.add(APIC(
-                    encoding=3,
-                    mime='image/jpg',
-                    type=3, desc=u'Cover',
-                    data=open(photo_file,'rb').read()
-                    ))
-    # audio['APIC'] = APIC(
-    #                 encoding=3,
-    #                 mime='image/jpg',
-    #                 type=3, desc=u'Cover',
-    #                 data=open(photo_file,'rb').read()
-    #                 )
-
-    audio.save()
-
-    # audio_file.tags.add(APIC(mime='image/jpg',type=3,desc=u'Cover',data=open(photo_file,'rb').read()))
-    # audio_file.save() 
+    audio_file.tags.add(APIC(mime='image/jpg',type=3,desc=u'Cover',data=open(photo_file,'rb').read()))
+    audio_file.save() 
 
     logger.info(audio_file)
 
