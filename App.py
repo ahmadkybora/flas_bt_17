@@ -24,7 +24,7 @@ from eyed3 import load
 from stepic import encode
 from PIL import Image
 from mutagen.mp3 import MP3
-from mutagen.id3 import ID3, APIC, error
+from mutagen.id3 import ID3, APIC, TT2, TIT2, TPE1, TRCK, TALB, USLT, error
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -275,10 +275,10 @@ def audio(update: Update, context: CallbackContext) -> None:
     # print("ok") # The END :)
     # input()
 
-    data = "سلام مصطفی جون"
+    # data = "سلام مصطفی جون"
 
-    photo_file = 'user_photo.jpg'
-    audio_file = 'user_music.mp3'
+    # photo_file = 'user_photo.jpg'
+    # audio_file = 'user_music.mp3'
     # audio_file = load(audio_file)
     # chat_id = update.message.chat_id
     # context.bot.send_document(chat_id, document=open(audio_file, 'rb'))
@@ -298,13 +298,13 @@ def audio(update: Update, context: CallbackContext) -> None:
     # audio_file = MP3(audio_file, ID3=ID3)
     # audio_file.add_tags()
 
-    audio = ID3(audio_file)
-    audio.add(APIC(
-                    encoding=3,
-                    mime='image/jpg',
-                    type=3, desc=u'Cover',
-                    data=open(photo_file,'rb').read()
-                    ))
+    # audio = ID3(audio_file)
+    # audio.add(APIC(
+    #                 encoding=3,
+    #                 mime='image/jpg',
+    #                 type=3, desc=u'Cover',
+    #                 data=open(photo_file,'rb').read()
+    #                 ))
     # audio['APIC'] = APIC(
     #                 encoding=3,
     #                 mime='image/jpg',
@@ -312,15 +312,55 @@ def audio(update: Update, context: CallbackContext) -> None:
     #                 data=open(photo_file,'rb').read()
     #                 )
 
-    audio.save()
+    # audio.save()
+
+ # ID3 info:
+ # APIC: picture
+ # TIT2: title
+ # TPE1: artist
+ # TRCK: track number
+ # TALB: album
+ # USLT: lyric
+
+
+    # pic_file = 'user_photo.jpg'
+    # audio = MP3('user_music.mp3', ID3=ID3)    
+    # try:
+    #     audio.add_tags()
+    # except:
+    #     pass
+    # audio.tags.add(APIC(
+    #     encoding=3,
+    #     mime='image/jpg',
+    #     type=3,
+    #     desc='Cover Picture',
+    #     data=open(pic_file, 'rb').read()
+    # ))
+    # audio.tags.add(TT2(encoding=3, text='salam doste man'))
+    # audio.tags.add(TALB(encoding=3, text='album'))
+    # audio.save()
+
+    imagedata = open('user_photo.jpg', 'rb').read()
+    id3 = ID3('user_music.mp3')
+    id3.add(APIC(3, 'image/jpg', 3, 'Front cover', imagedata))
+    id3.add(TIT2(encoding=3, text='title'))
+    id3.save(v2_version=3)
+
+    #audio.tags.add(TPE1(encoding=3, text=item['artist'].decode('utf-8')))
+    #audio.tags.add(TRCK(encoding=3, text=str(track_num).decode('utf-8')))
+    #audio.tags.add(USLT(encoding=3, lang=u'eng', desc=u'desc', text=item['lyric'].decode('utf-8')))
+
+    # ID3('user_music.mp3').save(v2_version=3)
+
+
 
     # audio_file.tags.add(APIC(mime='image/jpg',type=3,desc=u'Cover',data=open(photo_file,'rb').read()))
     # audio_file.save() 
 
-    logger.info(audio_file)
+    logger.info(audio)
 
     chat_id = update.message.chat_id
-    context.bot.send_document(chat_id, document=open(audio_file, 'rb'))
+    context.bot.send_document(chat_id, document=open('user_music.mp3', 'rb'))
 
     # document = open('user_photo.jpg', 'rb')
     # audio.download('user_tag_music.mp3')
