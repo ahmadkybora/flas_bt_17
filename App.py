@@ -43,37 +43,31 @@ is_lang = ''
 my_lang = 'Please select your language'
 
 
-def language(validation = [])-> None:
-    logger.info(validation)
-    # if is_lang == 'fa':
-    #     validation = {
-    #         'first_name': 'لطفا نام خود را وارد کنید',
-    #         'last_name': 'لطفا نام خانوگی خود را وارد کنید',
-    #         'mobile': 'لطفا شماره موبایل خود را وارد کنید',
-    #         'age': 'لطفا سن خود را وارد کنید',
-    #         'state': 'لطفا نام استان محل زندگی خود را وارد کنید',
-    #         'city': 'لطفا نام شهر خود را وارد کنید',
-    #         'photo': 'لطفا تصویر خود را وارد کنید',
-    #         'audio': 'لطفا موزیک خود را وارد کنید',
-    #         'thank_you': 'از شما متشکریم',
-    #         'bio': 'bio',
-    #     }
-    #     return validation
+# validation = {
+#     'first_name': 'لطفا نام خود را وارد کنید',
+#     'last_name': 'لطفا نام خانوگی خود را وارد کنید',
+#     'mobile': 'لطفا شماره موبایل خود را وارد کنید',
+#     'age': 'لطفا سن خود را وارد کنید',
+#     'state': 'لطفا نام استان محل زندگی خود را وارد کنید',
+#     'city': 'لطفا نام شهر خود را وارد کنید',
+#     'photo': 'لطفا تصویر خود را وارد کنید',
+#     'audio': 'لطفا موزیک خود را وارد کنید',
+#     'thank_you': 'از شما متشکریم',
+#     'bio': 'bio',
+# }
 
-    # if is_lang == 'en':
-    #     validation = {
-    #         'first_name': 'Please enter your name',
-    #         'last_name': 'لطفا نام خانوگی خود را وارد کنید',
-    #         'mobile': 'لطفا شماره موبایل خود را وارد کنید',
-    #         'age': 'لطفا سن خود را وارد کنید',
-    #         'state': 'لطفا نام استان محل زندگی خود را وارد کنید',
-    #         'city': 'لطفا نام شهر خود را وارد کنید',
-    #         'photo': 'Please enter your image',
-    #         'audio': 'Please enter your music',
-    #         'thank_you': 'از شما متشکریم',
-    #         'bio': 'bio',
-    #     }
-    #     return validation
+validation = {
+    'first_name': 'Please enter your name',
+    'last_name': 'لطفا نام خانوگی خود را وارد کنید',
+    'mobile': 'لطفا شماره موبایل خود را وارد کنید',
+    'age': 'لطفا سن خود را وارد کنید',
+    'state': 'لطفا نام استان محل زندگی خود را وارد کنید',
+    'city': 'لطفا نام شهر خود را وارد کنید',
+    'photo': 'Please enter your image',
+    'audio': 'Please enter your music',
+    'thank_you': 'از شما متشکریم',
+    'bio': 'bio',
+}
 
 ages = [
     [
@@ -192,7 +186,7 @@ def first_name(update, context):
     user.first_name = first_name
     isUser.append(first_name)
     logger.info("your first_name is %s", first_name)
-    update.message.reply_text(language('last_name'))
+    update.message.reply_text(validation['last_name'])
     return LASTNAME
 
 def last_name(update, context):
@@ -201,7 +195,7 @@ def last_name(update, context):
     isUser.append(last_name)
     logger.info("your last_name is %s", last_name)
     logger.info("users array is %s", isUser)
-    update.message.reply_text(language('mobile'))
+    update.message.reply_text(validation['mobile'])
     return MOBILE
 
 def phone_number(update, context):
@@ -210,7 +204,7 @@ def phone_number(update, context):
     isUser.append(phone_number)
     logger.info("your phone_number is %s", phone_number)
     reply_markup = InlineKeyboardMarkup(ages)
-    update.message.reply_text(language('age'), reply_markup=reply_markup)
+    update.message.reply_text(validation['age'], reply_markup=reply_markup)
     return AGE
 
 def age(update, context) -> None:
@@ -220,7 +214,7 @@ def age(update, context) -> None:
     isUser.append(query.data)
     logger.info("your age is %s", {query.data})
     reply_markup = InlineKeyboardMarkup(states)
-    query.edit_message_text(language('state'), reply_markup=reply_markup)
+    query.edit_message_text(validation['state'], reply_markup=reply_markup)
     return STATE
 
 def state(update, context):
@@ -230,7 +224,7 @@ def state(update, context):
     isUser.append(query.data)
     logger.info("your state is %s", {query.data})
     reply_markup = InlineKeyboardMarkup(cities)
-    query.edit_message_text(language('city'), reply_markup=reply_markup)
+    query.edit_message_text(validation['city'], reply_markup=reply_markup)
     return CITY
 
 def city(update, context):
@@ -239,7 +233,7 @@ def city(update, context):
     user.city = {query.data}
     isUser.append(query.data)
     logger.info("your city is %s", {query.data})
-    query.edit_message_text(language('photo'))
+    query.edit_message_text(validation['photo'])
     return PHOTO
 
 def lang(update: Update, context: CallbackContext) -> None:
@@ -247,14 +241,14 @@ def lang(update: Update, context: CallbackContext) -> None:
     query.answer()
     is_lang = {query.data}
     logger.info("your lang is %s", str(is_lang))
-    query.edit_message_text(language(['photo']))
+    query.edit_message_text(validation['photo'])
     return PHOTO
 
 def photo(update, context):
     photo_file = update.message.photo[-1].get_file()
     photo_file.download('user_photo.png')
     logger.info(user)
-    update.message.reply_text(language('audio'))
+    update.message.reply_text(validation['audio'])
     return AUDIO
 
 def audio(update: Update, context: CallbackContext) -> None:
