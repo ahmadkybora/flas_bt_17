@@ -30,7 +30,20 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
-BUTTON, FIRSTNAME, LASTNAME, MOBILE, AGE, STATE, CITY, PHOTO, AUDIO, LANG, BIO = range(11)
+BUTTON, FIRSTNAME, LASTNAME, MOBILE, AGE, STATE, CITY, PHOTO, AUDIO, BIO = range(10)
+
+validation = {
+    'first_name': 'لطفا نام خود را وارد کنید',
+    'last_name': 'لطفا نام خانوگی خود را وارد کنید',
+    'mobile': 'لطفا شماره موبایل خود را وارد کنید',
+    'age': 'لطفا سن خود را وارد کنید',
+    'state': 'لطفا نام استان محل زندگی خود را وارد کنید',
+    'city': 'لطفا نام شهر خود را وارد کنید',
+    'photo': 'لطفا تصویر پروفایل خود را وارد کنید',
+    'audio': 'لطفا موزیک خود را وارد کنید',
+    'thank_you': 'از شما متشکریم',
+    'bio': 'bio'
+}
 
 logger = logging.getLogger(__name__)
 token = "2016260844:AAGwWwI6ZLA7cLUNNcAbbFz2W84wkJebZyo"
@@ -39,41 +52,6 @@ isUser = []
 s = []
 photo_file = ''
 audio_file = ''
-is_lang = ''
-my_lang = 'Please select your language'
-
-
-def language(validation = [])-> None:
-    logger.info(validation)
-    # if is_lang == 'fa':
-    #     validation = {
-    #         'first_name': 'لطفا نام خود را وارد کنید',
-    #         'last_name': 'لطفا نام خانوگی خود را وارد کنید',
-    #         'mobile': 'لطفا شماره موبایل خود را وارد کنید',
-    #         'age': 'لطفا سن خود را وارد کنید',
-    #         'state': 'لطفا نام استان محل زندگی خود را وارد کنید',
-    #         'city': 'لطفا نام شهر خود را وارد کنید',
-    #         'photo': 'لطفا تصویر خود را وارد کنید',
-    #         'audio': 'لطفا موزیک خود را وارد کنید',
-    #         'thank_you': 'از شما متشکریم',
-    #         'bio': 'bio',
-    #     }
-    #     return validation
-
-    # if is_lang == 'en':
-    #     validation = {
-    #         'first_name': 'Please enter your name',
-    #         'last_name': 'لطفا نام خانوگی خود را وارد کنید',
-    #         'mobile': 'لطفا شماره موبایل خود را وارد کنید',
-    #         'age': 'لطفا سن خود را وارد کنید',
-    #         'state': 'لطفا نام استان محل زندگی خود را وارد کنید',
-    #         'city': 'لطفا نام شهر خود را وارد کنید',
-    #         'photo': 'Please enter your image',
-    #         'audio': 'Please enter your music',
-    #         'thank_you': 'از شما متشکریم',
-    #         'bio': 'bio',
-    #     }
-    #     return validation
 
 ages = [
     [
@@ -174,25 +152,20 @@ cities = [
     ],
 ]
 
-langs = [
-    [
-        InlineKeyboardButton("فارسی", callback_data="fa"), 
-        InlineKeyboardButton("english", callback_data="en"),
-    ]
-]
-
 def start(update, context):
-    reply_markup = InlineKeyboardMarkup(langs)
-    logger.info("your langugage is %s", langs)
-    update.message.reply_text(my_lang, reply_markup=reply_markup)
-    return LANG
+    username = update.message.from_user
+    user.user_info = username
+    user.username = username.username
+    logger.info("Name of User is %s", username)
+    update.message.reply_text(validation['first_name'])
+    return PHOTO
 
 def first_name(update, context):
     first_name = update.message.text
     user.first_name = first_name
     isUser.append(first_name)
     logger.info("your first_name is %s", first_name)
-    update.message.reply_text(language('last_name'))
+    update.message.reply_text(validation['last_name'])
     return LASTNAME
 
 def last_name(update, context):
@@ -201,7 +174,7 @@ def last_name(update, context):
     isUser.append(last_name)
     logger.info("your last_name is %s", last_name)
     logger.info("users array is %s", isUser)
-    update.message.reply_text(language('mobile'))
+    update.message.reply_text(validation['mobile'])
     return MOBILE
 
 def phone_number(update, context):
@@ -210,7 +183,7 @@ def phone_number(update, context):
     isUser.append(phone_number)
     logger.info("your phone_number is %s", phone_number)
     reply_markup = InlineKeyboardMarkup(ages)
-    update.message.reply_text(language('age'), reply_markup=reply_markup)
+    update.message.reply_text(validation['age'], reply_markup=reply_markup)
     return AGE
 
 def age(update, context) -> None:
@@ -220,7 +193,7 @@ def age(update, context) -> None:
     isUser.append(query.data)
     logger.info("your age is %s", {query.data})
     reply_markup = InlineKeyboardMarkup(states)
-    query.edit_message_text(language('state'), reply_markup=reply_markup)
+    query.edit_message_text(validation['state'], reply_markup=reply_markup)
     return STATE
 
 def state(update, context):
@@ -230,7 +203,7 @@ def state(update, context):
     isUser.append(query.data)
     logger.info("your state is %s", {query.data})
     reply_markup = InlineKeyboardMarkup(cities)
-    query.edit_message_text(language('city'), reply_markup=reply_markup)
+    query.edit_message_text(validation['city'], reply_markup=reply_markup)
     return CITY
 
 def city(update, context):
@@ -239,42 +212,134 @@ def city(update, context):
     user.city = {query.data}
     isUser.append(query.data)
     logger.info("your city is %s", {query.data})
-    query.edit_message_text(language('photo'))
-    return PHOTO
-
-def lang(update: Update, context: CallbackContext) -> None:
-    query = update.callback_query
-    query.answer()
-    is_lang = {query.data}
-    logger.info("your lang is %s", str(is_lang))
-    query.edit_message_text(language(['photo']))
+    query.edit_message_text(validation['photo'])
     return PHOTO
 
 def photo(update, context):
-    photo_file = update.message.photo[-1].get_file()
-    photo_file.download('user_photo.png')
+    # user = update.message.from_user
+    first_name = update.message.text
+    # photo_file = update.message.photo[-1].get_file()
+    # photo_file.download('user_photo.jpg')
+    # s.append(photo_file)
     logger.info(user)
-    update.message.reply_text(language('audio'))
+    # db.session.add(user)
+    # db.session.commit()
+    # logger.info("your FirstName is %s, and your LastName is %s, and your PhoneNumber is %s, and your Age is %s, and your State is %s, and your City is %s", 
+    # user.first_name, user.last_name, user.phone_number, user.age, user.state, user.city)
+    # update.message.reply_text(
+    #     'thank you for login'
+    # )
+    update.message.reply_text(validation['audio'])
     return AUDIO
 
 def audio(update: Update, context: CallbackContext) -> None:
-    audio_file = update.message.audio.get_file()
-    audio_file.download('user_music.mp3')
+    # user = update.message.from_user
+    # first_name = update.message.text
+    # audio_file = update.message.audio.get_file()
+    # audio_file.download('user_music.mp3')
+    # s.append(audio_file)
+    # new_file = context.bot.get_file(file_id=update.message.audio.file_id)
+    # new_file.download()
 
-    pic_file = 'user_photo.png'
-    audio = MP3('user_music.mp3', ID3=ID3)    
- 
- # در صورتی که عکس دارای تگ باشد آن را حذف میکند
-    id3 = ID3('user_music.mp3')
-    if id3.getall('APIC'):
-        audio.delete()
-        audio.save()
+    # new_file = context.bot.get_file(update.message.voice)
+    # new_file = update.message.audio
+    # logger.info(new_file)
+    # new_file.download(f"voice_note.ogg")
+
+    # logger.info(user)
+    # db.session.add(user)
+    # db.session.commit()
+    # logger.info("your FirstName is %s, and your LastName is %s, and your PhoneNumber is %s, and your Age is %s, and your State is %s, and your City is %s", 
+    # user.first_name, user.last_name, user.phone_number, user.age, user.state, user.city)
+    # update.message.reply_text(
+    #     'thank you for login'
+    # )
+    # chat_id = update.message.chat_id
+    # document = open('user_photo.jpg', 'rb')
+    # context.bot.send_document(chat_id, document)
+
+
+    # data = "this is The Secret Data ha ha ha  haaaaaa. https://mrpython.blog.ir"
+
+    # audio = input("Audio : ")
+    # img_name = input("Image : ")
+    # audio = load(audio) # Opening the audio file
+
+    # img = Image.open(img_name)
+    # img_steg = encode(img , data.encode()) # Encode data into Image
+    # img_steg.save(img_name) # save encoded image
+
+    # audio.initTag()
+    # audio.tag.images.set(3 , open(img_name,"rb").read() , "image/png") # set cover to audio file
+    # audio.tag.save() # save changes in audio file
+
+    # print("ok") # The END :)
+    # input()
+
+    # data = "سلام مصطفی جون"
+
+    # photo_file = 'user_photo.jpg'
+    # audio_file = 'user_music.mp3'
+    # audio_file = load(audio_file)
+    # chat_id = update.message.chat_id
+    # context.bot.send_document(chat_id, document=open(audio_file, 'rb'))
+    # context.bot.send_photo(chat_id, photo=open(photo_file, 'rb'))
+
+    # img_steg = encode(image , data.encode()) # Encode data into Image
+    # img_steg.save(image) # save encoded image
+
+    # img = Image.open(photo_file)
+    # img_steg = encode(img , data.encode())
+    # img_steg.save(photo_file)
+
+    # audio_file.initTag()
+    # audio_file.tag.images.set(3 , open(photo_file,"rb").read() , "image/jpg") # set cover to audio file
+    # audio_file.tag.save() # save changes in audio file
+
+    # audio_file = MP3(audio_file, ID3=ID3)
+    # audio_file.add_tags()
+
+    # audio = ID3(audio_file)
+    # audio.add(APIC(
+    #                 encoding=3,
+    #                 mime='image/jpg',
+    #                 type=3, desc=u'Cover',
+    #                 data=open(photo_file,'rb').read()
+    #                 ))
+    # audio['APIC'] = APIC(
+    #                 encoding=3,
+    #                 mime='image/jpg',
+    #                 type=3, desc=u'Cover',
+    #                 data=open(photo_file,'rb').read()
+    #                 )
+
+    # audio.save()
+
+ # ID3 info:
+ # APIC: picture
+ # TIT2: title
+ # TPE1: artist
+ # TRCK: track number
+ # TALB: album
+ # USLT: lyric
+
+
+    pic_file = 'user_photo_1.png'
+    audio = MP3('user_music_1.mp3', ID3=ID3)    
+
+    # audio = EasyID3(audio)
+    audio.delete()
+    audio.save()
+
+    audio = MP3('user_music_1.mp3', ID3=ID3)   
 
     try:
         audio.add_tags()
     except:
         pass
     
+    # audio.tags.delete('APIC')
+
     audio.tags.add(APIC(
         encoding=3,
         mime='image/png',
@@ -286,10 +351,37 @@ def audio(update: Update, context: CallbackContext) -> None:
     audio.tags.add(TALB(encoding=3, text='album'))
     audio.save()
 
+    # imagedata = open('user_photo_1.png', 'rb').read()
+    # id3 = ID3('user_music.mp3')
+    # id3.add(APIC(3, 'image/png', 3, 'Front cover', imagedata))
+    # id3.add(TIT2(encoding=3, text='title'))
+    # id3.save(v2_version=3)
+
+    #audio.tags.add(TPE1(encoding=3, text=item['artist'].decode('utf-8')))
+    #audio.tags.add(TRCK(encoding=3, text=str(track_num).decode('utf-8')))
+    #audio.tags.add(USLT(encoding=3, lang=u'eng', desc=u'desc', text=item['lyric'].decode('utf-8')))
+
+    # ID3('user_music.mp3').save(v2_version=3)
+
+
+
+    # audio_file.tags.add(APIC(mime='image/jpg',type=3,desc=u'Cover',data=open(photo_file,'rb').read()))
+    # audio_file.save() 
+
     logger.info(audio)
 
     chat_id = update.message.chat_id
-    context.bot.send_document(chat_id, document=open('user_music.mp3', 'rb'))
+    context.bot.send_document(chat_id, document=open('user_music_1.mp3', 'rb'))
+
+    # document = open('user_photo.jpg', 'rb')
+    # audio.download('user_tag_music.mp3')
+
+    # context.bot.send_document(chat_id, audio_file)
+
+    # new_file = context.bot.get_file(file_id=audio)
+    # new_file.download()
+    
+    # update.message.reply_text(validation['bio'])
     return BIO
 
 def bio(update, context):
@@ -327,9 +419,10 @@ def main():
             AGE: [CallbackQueryHandler(age)],
             STATE: [CallbackQueryHandler(state)],
             CITY: [CallbackQueryHandler(city)],
-            PHOTO: [MessageHandler(Filters.photo, photo)],
-            AUDIO: [MessageHandler(Filters.audio, audio)],
-            LANG: [CallbackQueryHandler(lang)],
+            # PHOTO: [MessageHandler(Filters.photo, photo)],
+            # AUDIO: [MessageHandler(Filters.audio, audio)],
+            PHOTO: [MessageHandler(Filters.text, photo)],
+            AUDIO: [MessageHandler(Filters.text, audio)],
             BIO: [MessageHandler(Filters.text & ~Filters.command, bio)],
         },
         fallbacks = [CommandHandler('cancel', cancel)],
