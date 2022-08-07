@@ -26,6 +26,7 @@ from PIL import Image
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, APIC, TT2, TIT2, TPE1, TRCK, TALB, USLT, error
 from mutagen.easyid3 import EasyID3
+import locale
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -39,9 +40,8 @@ isUser = []
 s = []
 photo_file = ''
 audio_file = ''
-is_lang = ''
+app_language = ''
 my_lang = 'Please select your language'
-
 
 # validation = {
 #     'first_name': 'لطفا نام خود را وارد کنید',
@@ -56,18 +56,43 @@ my_lang = 'Please select your language'
 #     'bio': 'bio',
 # }
 
-validation = {
-    'first_name': 'Please enter your name',
-    'last_name': 'لطفا نام خانوگی خود را وارد کنید',
-    'mobile': 'لطفا شماره موبایل خود را وارد کنید',
-    'age': 'لطفا سن خود را وارد کنید',
-    'state': 'لطفا نام استان محل زندگی خود را وارد کنید',
-    'city': 'لطفا نام شهر خود را وارد کنید',
-    'photo': 'Please enter your image',
-    'audio': 'Please enter your music',
-    'thank_you': 'از شما متشکریم',
-    'bio': 'bio',
-}
+validation = [
+    {
+        'first_name_en': 'Please enter your name',
+        'last_name_en': 'لطفا نام خانوگی خود را وارد کنید',
+        'mobile_en': 'لطفا شماره موبایل خود را وارد کنید',
+        'age_en': 'لطفا سن خود را وارد کنید',
+        'state_en': 'لطفا نام استان محل زندگی خود را وارد کنید',
+        'city_en': 'لطفا نام شهر خود را وارد کنید',
+        'photo_en': 'Please enter your image',
+        'audio_en': 'Please enter your music',
+        'thank_you_en': 'از شما متشکریم',
+        'bio_en': 'bio',
+        'first_name_fa': 'لطفا نام خود را وارد کنید',
+        'last_name_fa': 'لطفا نام خانوگی خود را وارد کنید',
+        'mobile_fa': 'لطفا شماره موبایل خود را وارد کنید',
+        'age_fa': 'لطفا سن خود را وارد کنید',
+        'state_fa': 'لطفا نام استان محل زندگی خود را وارد کنید',
+        'city_fa': 'لطفا نام شهر خود را وارد کنید',
+        'photo_fa': 'لطفا تصویر خود را وارد کنید',
+        'audio_fa': 'لطفا موزیک خود را وارد کنید',
+        'thank_you_fa': 'از شما متشکریم',
+        'bio_fa': 'bio',
+    }
+]
+
+def localization(validation, app_language):
+    return {
+        "first_name": validation['first_name_' + app_language],
+        "last_name": validation['last_name_' + app_language],
+        "mobile": validation['mobile_' + app_language],
+        "age": validation['age_' + app_language],
+        "city": validation['city_' + app_language],
+        "photo": validation['photo_' + app_language],
+        "audio": validation['audio_' + app_language],
+        "thank_you": validation['thank_you_' + app_language],
+        "bio": validation['bio_' + app_language],
+    }
 
 ages = [
     [
@@ -239,9 +264,11 @@ def city(update, context):
 def lang(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     query.answer()
-    is_lang = {query.data}
-    logger.info("your lang is %s", str(is_lang))
-    query.edit_message_text(validation['photo'])
+    app_language = query.data
+    # locale.setlocale(locale.LC_ALL, app_language)
+    logger.info("your lang is %s", app_language)
+    # logger.info("your lang type is %s", type(app_language))
+    query.edit_message_text(localization('photo', app_language))
     return PHOTO
 
 def photo(update, context):
