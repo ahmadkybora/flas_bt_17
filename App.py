@@ -43,20 +43,20 @@ audio_file = ''
 app_language = ''
 my_lang = 'Please select your language'
 
-# validation = {
-#     'first_name': 'لطفا نام خود را وارد کنید',
-#     'last_name': 'لطفا نام خانوگی خود را وارد کنید',
-#     'mobile': 'لطفا شماره موبایل خود را وارد کنید',
-#     'age': 'لطفا سن خود را وارد کنید',
-#     'state': 'لطفا نام استان محل زندگی خود را وارد کنید',
-#     'city': 'لطفا نام شهر خود را وارد کنید',
-#     'photo': 'لطفا تصویر خود را وارد کنید',
-#     'audio': 'لطفا موزیک خود را وارد کنید',
-#     'thank_you': 'از شما متشکریم',
-#     'bio': 'bio',
-# }
+validation = {
+    'first_name': 'لطفا نام خود را وارد کنید',
+    'last_name': 'لطفا نام خانوگی خود را وارد کنید',
+    'mobile': 'لطفا شماره موبایل خود را وارد کنید',
+    'age': 'لطفا سن خود را وارد کنید',
+    'state': 'لطفا نام استان محل زندگی خود را وارد کنید',
+    'city': 'لطفا نام شهر خود را وارد کنید',
+    'photo': 'لطفا تصویر خود را وارد کنید',
+    'audio': 'لطفا موزیک خود را وارد کنید',
+    'thank_you': 'از شما متشکریم',
+    'bio': 'bio',
+}
 
-validation = [
+validation1 = [
     {
         'first_name_en': 'Please enter your name',
         'last_name_en': 'لطفا نام خانوگی خود را وارد کنید',
@@ -201,10 +201,16 @@ langs = [
 ]
 
 def start(update, context):
-    reply_markup = InlineKeyboardMarkup(langs)
-    logger.info("your langugage is %s", langs)
-    update.message.reply_text(my_lang, reply_markup=reply_markup)
-    return LANG
+    # reply_markup = InlineKeyboardMarkup(langs)
+    # logger.info("your langugage is %s", langs)
+    # update.message.reply_text(my_lang, reply_markup=reply_markup)
+    # return LANG
+    username = update.message.from_user
+    user.user_info = username
+    user.username = username.username
+    logger.info("Name of User is %s", username)
+    update.message.reply_text(validation['photo'])
+    return PHOTO
 
 def first_name(update, context):
     first_name = update.message.text
