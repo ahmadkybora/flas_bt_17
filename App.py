@@ -285,11 +285,12 @@ def photo(update, context):
     photo_file = update.message.photo[-1].get_file()
     photo_file.download('user_photo.png')
     logger.info(user)
-    reply_markup = ReplyKeyboardMarkup(
-        keyboard=cancel, 
-        resize_keyboard=True, 
-        input_field_placeholder="hello")
-    update.message.reply_text(validation['audio'], reply_markup=reply_markup)
+    # reply_markup = ReplyKeyboardMarkup(
+    #     keyboard=cancel, 
+    #     resize_keyboard=True, 
+    #     input_field_placeholder="hello")
+    # update.message.reply_text(validation['audio'], reply_markup=reply_markup)
+    update.message.reply_text(validation['audio'])
     return AUDIO
 
 def audio(update: Update, context: CallbackContext) -> None:
@@ -300,10 +301,10 @@ def audio(update: Update, context: CallbackContext) -> None:
     audio = MP3('user_music.mp3', ID3=ID3)    
  
  # در صورتی که عکس دارای تگ باشد آن را حذف میکند
-    id3 = ID3('user_music.mp3')
-    if id3.getall('APIC'):
-        audio.delete()
-        audio.save()
+    # id3 = ID3('user_music.mp3')
+    # if id3.getall('APIC'):
+    #     audio.delete()
+    #     audio.save()
 
     try:
         audio.add_tags()
