@@ -301,10 +301,10 @@ def audio(update: Update, context: CallbackContext) -> None:
     audio = MP3('user_music.mp3', ID3=ID3)    
  
  # در صورتی که عکس دارای تگ باشد آن را حذف میکند
-    # id3 = ID3('user_music.mp3')
-    # if id3.getall('APIC'):
-    #     audio.delete()
-    #     audio.save()
+    id3 = ID3('user_music.mp3')
+    if id3.getall('APIC'):
+        audio.delete()
+        audio.save()
 
     try:
         audio.add_tags()
