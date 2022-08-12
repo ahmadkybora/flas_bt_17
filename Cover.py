@@ -1,5 +1,3 @@
-from config.database import app
-from dataclasses import field
 from config import app
 from telegram.ext import Updater, CallbackContext, CallbackQueryHandler, CommandHandler, MessageHandler, Filters, ConversationHandler, ContextTypes
 from telegram import Update
@@ -149,8 +147,8 @@ def main():
     )
 
     dispatcher.add_handler(conv_handler)
-    # dispatcher.add_handler(MessageHandler(Filters.text("Cancel"), cancel))
-    # dispatcher.add_handler(MessageHandler(Filters.text, echo))
+    dispatcher.add_handler(MessageHandler(Filters.text("Cancel"), cancel))
+    dispatcher.add_handler(MessageHandler(Filters.text, echo))
 
     updater.start_polling()
     updater.idle()
