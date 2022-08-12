@@ -43,9 +43,14 @@ validation = {
     'bio': 'bio',
 }
 
-cancle = [
-    KeyboardButton("cancle"), 
+# cancle = [
+#     KeyboardButton("cancle"), 
+# ]
+
+reply_keyboard = [
+    ["Cancel"],
 ]
+cancle = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
 
 langs = [
     [
@@ -71,8 +76,8 @@ def photo(update: Update, context: CallbackContext):
     #     keyboard=cancel, 
     #     resize_keyboard=True, 
     #     input_field_placeholder="hello")
-    # update.message.reply_text(validation['audio'], reply_markup=reply_markup)
-    update.message.reply_text(validation['audio'])
+    update.message.reply_text(validation['audio'], reply_markup=cancle)
+    # update.message.reply_text(validation['audio'])
     return AUDIO
 
 def audio(update: Update, context: CallbackContext) -> None:
@@ -100,7 +105,7 @@ def audio(update: Update, context: CallbackContext) -> None:
         desc='Cover Picture',
         data=open(pic_file, 'rb').read()
     ))
-    audio.tags.add(TT2(encoding=3, text='salam doste man'))
+    audio.tags.add(TT2(encoding=3, text='سلام مصطفی حالت چطوره'))
     audio.tags.add(TALB(encoding=3, text='album'))
     audio.save()
 
@@ -108,20 +113,26 @@ def audio(update: Update, context: CallbackContext) -> None:
 
     chat_id = update.message.chat_id
     context.bot.send_document(chat_id, document=open('user_music.mp3', 'rb'))
-    return ConversationHandler.END
+    update.message.reply_text(validation['photo'])
+    return PHOTO
 
 def cancel(update: Update, context: CallbackContext):
-    user = update.message.from_user
-    logger.info("name of user is %s", user.first_name)
-    update.message.reply_text(
-        'send me a photo of yourself, '
-        'so that we can register you, or send /skip if you don\'t want to.',
-        reply_markup=ReplyKeyboardRemove(),
-    )
+    username = update.message.from_user.username
+    logger.info("name of user is %s", username)
+    update.message.reply_text('متشکریم از شما %s', username)
     return ConversationHandler.END
 
+    # user = update.message.from_user
+    # logger.info("name of user is %s", user.first_name)
+    # update.message.reply_text(
+    #     'send me a photo of yourself, '
+    #     'so that we can register you, or send /skip if you don\'t want to.',
+    #     reply_markup=ReplyKeyboardRemove(),
+    # )
+    # return ConversationHandler.END
+
 def echo(update, context):
-    update.message.reply_text('چی میگی')
+    update.message.reply_text('مصطفی چی میگی نمیفهمم')
 
 def main():
     updater = Updater(token, use_context=True)
@@ -133,11 +144,13 @@ def main():
             PHOTO: [MessageHandler(Filters.photo, photo)],
             AUDIO: [MessageHandler(Filters.audio, audio)],
         },
-        fallbacks = [CommandHandler('cancel', cancel)],
+        fallbacks = [MessageHandler(Filters.text("Cancel"), cancel)],
+        # fallbacks = [CommandHandler('cancel', cancel)],
     )
 
     dispatcher.add_handler(conv_handler)
-    dispatcher.add_handler(MessageHandler(Filters.text, echo))
+    # dispatcher.add_handler(MessageHandler(Filters.text("Cancel"), cancel))
+    # dispatcher.add_handler(MessageHandler(Filters.text, echo))
 
     updater.start_polling()
     updater.idle()
