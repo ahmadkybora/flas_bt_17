@@ -62,9 +62,19 @@ def audio(update: Update, context: CallbackContext) -> None:
 
     pic_file = 'user_photo.png'
     audio = MP3('user_music.mp3', ID3=ID3)  
+    # tt2 = audio["TT2"].text[0] #tt2
+
 
     audio = ID3('user_music.mp3')
-    tags = audio.pprint()
+    
+    # logger.info("Artist: %s" % audio['TPE1'].text[0])
+    # logger.info("Track: %s" % audio["TIT2"].text[0])
+    # logger.info("Release Year: %s" % audio["TDRC"].text[0])
+
+    # s = ["Artist: ", "Track: ", "Release Year"]
+
+
+
     # id3 = ID3()
     # id3.add(TRCK(encoding=3, text=str(info['track'])))
     # id3.add(TDRC(encoding=3, text=str(info['year'])))
@@ -85,30 +95,68 @@ def audio(update: Update, context: CallbackContext) -> None:
     #     desc=u'Front Cover', data=self.get_cover(info)))
     # id3.save(file_name) 
 
-    # s = ''
-    # art = audio.getall("APIC")
-    # logger.info(art)
-    # if audio.getall('TRCK') == [audio['TRCK']]:
-    #     s += "Track Name:     " + audio["TRCK"].text[0] + "\n"
+
+
+    s = ''
+
+    if audio.getall('TPE1') == [audio['TPE1']]:
+        s += "Artist: " + audio["TPE1"].text[0] + "\n"
+        # artsit = "your Artist: " + artist
+
+    if audio.getall('TIT2') == [audio['TIT2']]:
+        s += "Track: " + audio["TIT2"].text[0] + "\n"
 
     # if audio.getall('TDRC') == [audio['TDRC']]:
-    #     s += "Release Year" + audio["TDRC"].text[0] + "\n"
+    #     s.append("Release Year" + audio["TDRC"].text[0])
 
-    # if audio.getall('TIT2') == [audio['TIT2']]:
-    #     s += "Song Name: " + audio["TIT2"].text[0] + "\n"
-
-    # if audio.getall('TALB') == [audio['TALB']]:
-    #     s += "Album Name: " + audio["TALB"].text[0] + "\n"
-
-    # if audio.getall('TPE1') == [audio['TPE1']]:
-    #     s += "Artist Name: " + audio["TPE1"].text[0] + "\n"
-
-    # if audio.getall('TPOS') == [audio['TPOS']]:
-    #     s += "cd Serial: " + audio["TPOS"].text[0] + "\n"
+    # artist = audio['TPE1'].text[0]
+    # track = audio["TIT2"].text[0]
+    # release_year = audio["TDRC"].text[0]
+    update.message.reply_text(s)
+    # Artist = audio['TPE1'].text[0] #Artist
+    # Track = audio["TIT2"].text[0] #Track 
+    # Release = audio["TDRC"].text[0] #Release
+    # Release = audio["TDRC"].text[0] #Release
 
 
+    # logger.info("your Artist is %s", Artist)
+    # logger.info("your Track is %s", Track)
+    # logger.info("your Release is %s", Release)
+    
+ # در صورتی که عکس دارای تگ باشد آن را حذف میکند
+    # id3 = ID3('user_music.mp3')
+    # if id3.getall('APIC'):
+    #     audio.delete()
+    #     audio.save()
 
-    update.message.reply_text(tags)
+    # try:
+    #     audio.add_tags()
+    # except:
+    #     pass
+    
+    # audio.tags.add(APIC(
+    #     encoding=3,
+    #     mime='image/png',
+    #     type=3,
+    #     desc='Cover Picture',
+    #     # data=open(pic_file, 'rb').read()
+    #     data=open(pic_file, encoding='ISO-8859-1').read().encode()
+    # ))
+    # audio.tags.add(TT2(encoding=3, text='سلام مصطفی حالت چطوره'))
+    # audio.tags.add(TALB(encoding=3, text='album'))
+    # audio.save()
+
+    # id3 = ID3('user_music.mp3')
+    # tt2 = id3["TT2"].text[0] #tt2
+    # logger.info("your tt2 is %s", tt2)
+
+    # # logger.info(audio)
+
+    # chat_id = update.message.chat_id
+    # context.bot.send_document(chat_id, document=open('user_music.mp3', 'rb'))
+    # # context.bot.send_document(chat_id, tags)
+    # update.message.reply_text(tt2)
+    # return PHOTO
 
 def cancel(update: Update, context: CallbackContext):
     username = update.message.from_user.username
