@@ -66,10 +66,11 @@ def photo(update: Update, context: CallbackContext):
     photo_file = update.message.photo[-1].get_file()
     photo_file.download('user_photo.png')
 
+    audio = MP3('user_music.mp3', ID3=ID3)   
+
     id3 = ID3('user_music.mp3')
-    # if id3.getall('APIC'):
-    #     audio.delete()
-    #     audio.save()
+    if id3.getall('APIC'):
+        audio.save()
 
     try:
         audio.add_tags()
@@ -81,7 +82,7 @@ def photo(update: Update, context: CallbackContext):
         mime='image/png',
         type=3,
         desc='Cover Picture',
-        data=open(photo_file, 'rb').read()
+        data=open('user_photo.png', 'rb').read()
     ))
     # audio.tags.add(TT2(encoding=3, text='سلام مصطفی حالت چطوره'))
     # audio.tags.add(TALB(encoding=3, text='album'))
