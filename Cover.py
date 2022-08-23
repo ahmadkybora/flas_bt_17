@@ -6,7 +6,7 @@ from telegram import (
     ReplyKeyboardMarkup, 
 )
 from mutagen.mp3 import MP3
-from mutagen.id3 import ID3, APIC, TT2, TALB
+from mutagen.id3 import ID3, APIC, TIT2, TT2, TALB
 from mutagen.easyid3 import EasyID3
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -66,27 +66,37 @@ def photo(update: Update, context: CallbackContext):
     photo_file = update.message.photo[-1].get_file()
     photo_file.download('user_photo.png')
 
-    audio = MP3('user_music.mp3', ID3=ID3)   
+    imagedata = open('user_photo.png', 'rb').read()
 
-    id3 = ID3('user_music.mp3')
-    if id3.getall('APIC'):
-        audio.save()
+    id3 = ID3('user_music.mp3', v2_version=3)
+    id3.add(APIC(3, 'image/jpeg', 3, 'Front cover', imagedata))
+    id3.add(TIT2(encoding=3, text='@Jojo_Musik'))
+    id3.save(v2_version=3)
 
-    try:
-        audio.add_tags()
-    except:
-        pass
+    # audio = MP3('user_music.mp3', ID3=ID3)   
+
+    # id3 = ID3('user_music.mp3')
+    # if id3.getall('APIC'):
+    #     audio.save()
+
+    # try:
+    #     audio.add_tags()
+    # except:
+    #     pass
     
-    audio.tags.add(APIC(
-        encoding=3,
-        mime='image/png',
-        type=3,
-        desc='Cover Picture',
-        data=open('user_photo.png', 'rb').read()
-    ))
+    # audio.tags.add(APIC(
+    #     encoding=3,
+    #     mime='image/png',
+    #     type=3,
+    #     desc='Cover Picture',
+    #     data=open('user_photo.png', 'rb').read()
+    # ))
     # audio.tags.add(TT2(encoding=3, text='سلام مصطفی حالت چطوره'))
     # audio.tags.add(TALB(encoding=3, text='album'))
-    audio.save()
+    # audio.save()
+    # audio.add(TIT2(encoding=3, text='title'))
+
+    # audio.save(v2_version=3)
 
     # logger.info(audio)
 
