@@ -46,17 +46,17 @@ langs = [
 def start(update: Update, context: CallbackContext):
     username = update.message.from_user
     logger.info("Name of User is %s", username)
-    update.message.reply_text(validation['audio'])
-    return AUDIO
+    update.message.reply_text(validation['photo'])
+    return PHOTO
 
 def photo(update: Update, context: CallbackContext):
     global photo_file
     photo_file = update.message.photo[-1].get_file()
     photo_file.download('user_photo.png')
-    update.message.reply_text(validation['thank_you'])
+    update.message.reply_text(validation['audio'])
     return AUDIO
 
-def audio(update: Update, context: CallbackContext):
+def audio(update: Update, context: CallbackContext) -> None:
     global audio_file
     audio_file = update.message.audio.get_file()
     audio_file.download('user_music.mp3')
@@ -67,8 +67,52 @@ def audio(update: Update, context: CallbackContext):
     audio = ID3('user_music.mp3')
     tags = audio.pprint()
 
-    update.message.reply_text(tags, validation['audio'])
-    return PHOTO
+    # for key in EasyID3.valid_keys.keys():
+    #     update.message.reply_text(key)
+    # id3 = ID3()
+    # id3.add(TRCK(encoding=3, text=str(info['track'])))
+    # id3.add(TDRC(encoding=3, text=str(info['year'])))
+    # id3.add(TIT2(encoding=3, text=info['song_name']))
+    # id3.add(TALB(encoding=3, text=info['album_name']))
+    # id3.add(TPE1(encoding=3, text=info['artist_name']))
+    # id3.add(TPOS(encoding=3, text=str(info['cd_serial'])))
+    # lyric_data = self.get_lyric(info)
+    # id3.add(USLT(encoding=3, text=lyric_data)) if lyric_data else None
+    # #id3.add(TCOM(encoding=3, text=info['composer']))
+    # #id3.add(WXXX(encoding=3, desc=u'xiami_song_url', text=info['song_url']))
+    # #id3.add(TCON(encoding=3, text=u'genre'))
+    # #id3.add(TSST(encoding=3, text=info['sub_title']))
+    # #id3.add(TSRC(encoding=3, text=info['disc_code']))
+    # id3.add(COMM(encoding=3, desc=u'Comment', \
+    #     text=info['comment']))
+    # id3.add(APIC(encoding=3, mime=u'image/jpeg', type=3, \
+    #     desc=u'Front Cover', data=self.get_cover(info)))
+    # id3.save(file_name) 
+
+    # s = ''
+    # art = audio.getall("APIC")
+    # logger.info(art)
+    # if audio.getall('TRCK') == [audio['TRCK']]:
+    #     s += "Track Name:     " + audio["TRCK"].text[0] + "\n"
+
+    # if audio.getall('TDRC') == [audio['TDRC']]:
+    #     s += "Release Year" + audio["TDRC"].text[0] + "\n"
+
+    # if audio.getall('TIT2') == [audio['TIT2']]:
+    #     s += "Song Name: " + audio["TIT2"].text[0] + "\n"
+
+    # if audio.getall('TALB') == [audio['TALB']]:
+    #     s += "Album Name: " + audio["TALB"].text[0] + "\n"
+
+    # if audio.getall('TPE1') == [audio['TPE1']]:
+    #     s += "Artist Name: " + audio["TPE1"].text[0] + "\n"
+
+    # if audio.getall('TPOS') == [audio['TPOS']]:
+    #     s += "cd Serial: " + audio["TPOS"].text[0] + "\n"
+
+
+
+    update.message.reply_text(tags)
 
 def cancel(update: Update, context: CallbackContext):
     username = update.message.from_user.username
