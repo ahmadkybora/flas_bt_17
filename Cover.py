@@ -12,7 +12,7 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
-PHOTO, AUDIO = range(2)
+PHOTO, AUDIO, = range(2)
 
 logger = logging.getLogger(__name__)
 # token = "2016260844:AAGwWwI6ZLA7cLUNNcAbbFz2W84wkJebZyo"
@@ -24,7 +24,7 @@ validation = {
     'mobile': 'لطفا شماره موبایل خود را وارد کنید',
     'age': 'لطفا سن خود را وارد کنید',
     'state': 'لطفا نام استان محل زندگی خود را وارد کنید',
-    'city': 'لطفا نام شهر خود را وارد کنید',
+    'city': 'لطفا نام شهر خود را وارد کنید',    
     'photo': 'لطفا تصویر خود را وارد کنید',
     'audio': 'لطفا موزیک خود را وارد کنید',
     'thank_you': 'از شما متشکریم فایل شما آماده دانلود است در ضمن میتوانید دوباره این کار ها را انجام دهید پس لطفا تصویر خود را وارد کنید',
@@ -49,26 +49,54 @@ def start(update: Update, context: CallbackContext):
     update.message.reply_text(validation['audio'])
     return AUDIO
 
-def photo(update: Update, context: CallbackContext):
-    global photo_file
-    photo_file = update.message.photo[-1].get_file()
-    photo_file.download('user_photo.png')
-    update.message.reply_text(validation['thank_you'])
-    return AUDIO
-
 def audio(update: Update, context: CallbackContext):
     global audio_file
     audio_file = update.message.audio.get_file()
     audio_file.download('user_music.mp3')
 
-    pic_file = 'user_photo.png'
-    audio = MP3('user_music.mp3', ID3=ID3)  
+    # audio = ID3('user_music.mp3')
+    # tags = audio.pprint()
 
-    audio = ID3('user_music.mp3')
-    tags = audio.pprint()
-
-    update.message.reply_text(tags, validation['audio'])
+    update.message.reply_text(validation['photo'])
+    # update.message.reply_text(tags, validation['audio'])
     return PHOTO
+
+def photo(update: Update, context: CallbackContext):
+    global photo_file
+    photo_file = update.message.photo[-1].get_file()
+    photo_file.download('user_photo.png')
+
+    id3 = ID3('user_music.mp3')
+    # if id3.getall('APIC'):
+    #     audio.delete()
+    #     audio.save()
+
+    try:
+        audio.add_tags()
+    except:
+        pass
+    
+    audio.tags.add(APIC(
+        encoding=3,
+        mime='image/png',
+        type=3,
+        desc='Cover Picture',
+        data=open(photo_file, 'rb').read()
+    ))
+    # audio.tags.add(TT2(encoding=3, text='سلام مصطفی حالت چطوره'))
+    # audio.tags.add(TALB(encoding=3, text='album'))
+    audio.save()
+
+    # logger.info(audio)
+
+    chat_id = update.message.chat_id
+    context.bot.send_document(chat_id, document=open('user_music.mp3', 'rb'))
+    update.message.reply_text(validation['thank_you'])
+    return PHOTO
+
+
+    update.message.reply_text(validation['thank_you'])
+    return LABEL
 
 def cancel(update: Update, context: CallbackContext):
     username = update.message.from_user.username
