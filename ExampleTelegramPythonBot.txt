@@ -2,3 +2,9 @@ https://github.com/python-telegram-bot/python-telegram-bot/tree/master/examples
 
 
 https://from-locals.com/python-mutagen-mp3-id3/
+
+
+https://github.com/topics/genius-api?l=python
+
+
+https://github.com/topics/music?l=python&o=desc&s=updated
