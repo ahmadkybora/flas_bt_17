@@ -8,6 +8,7 @@ from telegram import (
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, APIC, TIT2, TT2, TALB
 from mutagen.easyid3 import EasyID3
+import eyed3
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -67,11 +68,18 @@ def photo(update: Update, context: CallbackContext):
     photo_file.download('user_photo.png')
 
     imagedata = open('user_photo.png', 'rb').read()
+    audio = eyed3.load('user_music.mp3')
+    audio.tag.album_artist = u'Artist-Name'
+    audio.tag.images.remove(u'')
+    audio.tag.images.set(3, 'None', imagedata)
+    audio.tag.save()
 
-    id3 = ID3('user_music.mp3', v2_version=3)
-    id3.add(APIC(3, 'image/jpeg', 3, 'Front cover', imagedata))
-    id3.add(TIT2(encoding=3, text='@Jojo_Musik'))
-    id3.save(v2_version=3)
+    # imagedata = open('user_photo.png', 'rb').read()
+
+    # id3 = ID3('user_music.mp3', v2_version=3)
+    # id3.add(APIC(3, 'image/jpeg', 3, 'Front cover', imagedata))
+    # id3.add(TIT2(encoding=3, text='@Jojo_Musik'))
+    # id3.save(v2_version=3)
 
     # audio = MP3('user_music.mp3', ID3=ID3)   
 
