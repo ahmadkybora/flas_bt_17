@@ -9,6 +9,7 @@ from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, APIC, TIT2, TT2, TALB
 from mutagen.easyid3 import EasyID3
 import eyed3
+import music_tag
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
