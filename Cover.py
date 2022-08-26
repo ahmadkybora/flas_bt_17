@@ -9,7 +9,7 @@ from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, APIC, TIT2, TT2, TALB
 from mutagen.easyid3 import EasyID3
 import eyed3
-import music_tag
+# import music_tag
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -68,12 +68,12 @@ def photo(update: Update, context: CallbackContext):
     photo_file = update.message.photo[-1].get_file()
     photo_file.download('user_photo.png')
 
-    imagedata = open('user_photo.png', 'rb').read()
-    audio = eyed3.load('user_music.mp3')
-    audio.tag.album_artist = u'Artist-Name'
-    audio.tag.images.remove(u'')
-    audio.tag.images.set(3, 'None', imagedata)
-    audio.tag.save()
+    # imagedata = open('user_photo.png', 'rb').read()
+    # audio = eyed3.load('user_music.mp3')
+    # audio.tag.album_artist = u'Artist-Name'
+    # audio.tag.images.remove(u'')
+    # audio.tag.images.set(3, 'None', imagedata)
+    # audio.tag.save()
 
     # imagedata = open('user_photo.png', 'rb').read()
 
@@ -82,35 +82,35 @@ def photo(update: Update, context: CallbackContext):
     # id3.add(TIT2(encoding=3, text='@Jojo_Musik'))
     # id3.save(v2_version=3)
 
-    # audio = MP3('user_music.mp3', ID3=ID3)   
+    audio = MP3('user_music.mp3', ID3=ID3)   
 
-    # id3 = ID3('user_music.mp3')
-    # if id3.getall('APIC'):
-    #     audio.save()
+    id3 = ID3('user_music.mp3')
+    if id3.getall('APIC'):
+        audio.save()
 
-    # try:
-    #     audio.add_tags()
-    # except:
-    #     pass
+    try:
+        audio.add_tags()
+    except:
+        pass
     
-    # audio.tags.add(APIC(
-    #     encoding=3,
-    #     mime='image/png',
-    #     type=3,
-    #     desc='Cover Picture',
-    #     data=open('user_photo.png', 'rb').read()
-    # ))
+    audio.tags.add(APIC(
+        encoding=3,
+        mime='image/png',
+        type=3,
+        desc=u'Cover',
+        data=open('user_photo.png', 'rb').read()
+    ))
     # audio.tags.add(TT2(encoding=3, text='سلام مصطفی حالت چطوره'))
     # audio.tags.add(TALB(encoding=3, text='album'))
     # audio.save()
     # audio.add(TIT2(encoding=3, text='title'))
 
-    # audio.save(v2_version=3)
+    audio.save(v2_version=3)
 
     # logger.info(audio)
 
     chat_id = update.message.chat_id
-    context.bot.send_document(chat_id, document=open('user_music.mp3', 'rb'))
+    context.bot.send_document(chat_id, document=open('user_music.mp3', 'rb'), caption='the video', thumb=open('user_photo.png', 'rb').read())
     update.message.reply_text(validation['thank_you'])
     return PHOTO
 
