@@ -30,7 +30,7 @@ validation = {
     'city': 'لطفا نام شهر خود را وارد کنید',    
     'photo': 'لطفا تصویر خود را وارد کنید',
     'audio': 'لطفا موزیک خود را وارد کنید',
-    'thank_you': 'از شما متشکریم فایل شما آماده دانلود است در ضمن میتوانید دوباره این کار ها را انجام دهید پس لطفا تصویر خود را وارد کنید',
+    'thank_you': 'از شما متشکریم فایل شما آماده دانلود است در ضمن میتوانید دوباره این کار ها را انجام دهید',
     'bio': 'bio',
 }
 
@@ -113,7 +113,8 @@ def photo(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
     context.bot.send_document(chat_id, document=open('user_music.mp3', 'rb'), caption='the video', thumb=open('user_photo.png', 'rb').read())
     update.message.reply_text(validation['thank_you'])
-    return PHOTO
+    update.message.reply_text(validation['audio'])
+    return AUDIO
 
 
     update.message.reply_text(validation['thank_you'])
