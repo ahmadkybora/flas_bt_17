@@ -18,7 +18,8 @@ PHOTO, AUDIO, = range(2)
 
 logger = logging.getLogger(__name__)
 # token = "2016260844:AAGwWwI6ZLA7cLUNNcAbbFz2W84wkJebZyo"
-token = "2092105489:AAEHfZCr6xX5y4S3Bn4v0tVZJLIiND4t0NE"
+# token = "2092105489:AAEHfZCr6xX5y4S3Bn4v0tVZJLIiND4t0NE"
+token = "378545358:AAHuQjkYspm0CYr-ZG9xF_h31CB7V-pF118"
 
 validation = {
     'first_name': 'لطفا نام خود را وارد کنید',
