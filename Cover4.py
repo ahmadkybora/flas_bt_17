@@ -1,32 +1,10 @@
-####################
-# Built-in modules #
-####################
-import logging
-import os
-import re
-import sys
-from datetime import datetime
-
-#######################
-# Third-party modules #
-#######################
-import psutil
-import music_tag
-from orator import Model
-from persiantools import digits
-from telegram.error import TelegramError
-from telegram import Update, ReplyKeyboardMarkup, ChatAction, ParseMode, ReplyKeyboardRemove
-from telegram.ext import Updater, CommandHandler, CallbackContext, Filters, MessageHandler, \
-    Defaults, PicklePersistence
-
-# from config import app
-# from telegram.ext import Updater, CallbackContext, CommandHandler, MessageHandler, Filters, ConversationHandler, ContextTypes
-# from telegram import Update
-# from telegram import (
-#     InlineKeyboardButton, 
-#     ReplyKeyboardMarkup, 
-# )
-
+from config import app
+from telegram.ext import Updater, CallbackContext, CommandHandler, MessageHandler, Filters, ConversationHandler, ContextTypes
+from telegram import Update
+from telegram import (
+    InlineKeyboardButton, 
+    ReplyKeyboardMarkup, 
+)
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, APIC, TIT2, TT2, TALB
 from mutagen.easyid3 import EasyID3
@@ -42,9 +20,6 @@ logger = logging.getLogger(__name__)
 # token = "2016260844:AAGwWwI6ZLA7cLUNNcAbbFz2W84wkJebZyo"
 # token = "2092105489:AAEHfZCr6xX5y4S3Bn4v0tVZJLIiND4t0NE"
 token = "378545358:AAHuQjkYspm0CYr-ZG9xF_h31CB7V-pF118"
-
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-# BOT_USERNAME = os.getenv("BOT_USERNAME")
 
 validation = {
     'first_name': 'لطفا نام خود را وارد کنید',
@@ -70,36 +45,6 @@ langs = [
         InlineKeyboardButton("english", callback_data="en"),
     ]
 ]
-
-############
-# Handlers #
-############
-
-
-def command_start(update: Update, context: CallbackContext) -> None:
-    user_id = update.effective_user.id
-    username = update.effective_user.username
-
-    # reset_user_data_context(context)
-
-    # user = User.where('user_id', '=', user_id).first()
-
-    # update.message.reply_text(
-    #     translate_key_to(lp.START_MESSAGE, context.user_data['language']),
-    #     reply_markup=ReplyKeyboardRemove()
-    # )
-
-    # show_language_keyboard(update, context)
-
-    # if not user:
-    #     new_user = User()
-    #     new_user.user_id = user_id
-    #     new_user.username = username
-    #     new_user.number_of_files_sent = 0
-
-    #     new_user.save()
-
-    #     logger.info("A user with id %s has been started to use the bot.", user_id)
 
 def start(update: Update, context: CallbackContext):
     username = update.message.from_user
