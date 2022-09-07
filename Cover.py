@@ -1,32 +1,10 @@
-####################
-# Built-in modules #
-####################
-import logging
-import os
-import re
-import sys
-from datetime import datetime
-
-#######################
-# Third-party modules #
-#######################
-import psutil
-import music_tag
-from orator import Model
-from persiantools import digits
-from telegram.error import TelegramError
-from telegram import Update, ReplyKeyboardMarkup, ChatAction, ParseMode, ReplyKeyboardRemove
-from telegram.ext import Updater, CommandHandler, CallbackContext, Filters, MessageHandler, \
-    Defaults, PicklePersistence
-
-# from config import app
-# from telegram.ext import Updater, CallbackContext, CommandHandler, MessageHandler, Filters, ConversationHandler, ContextTypes
-# from telegram import Update
-# from telegram import (
-#     InlineKeyboardButton, 
-#     ReplyKeyboardMarkup, 
-# )
-
+from config import app
+from telegram.ext import Updater, CallbackContext, CommandHandler, MessageHandler, Filters, ConversationHandler, ContextTypes
+from telegram import Update
+from telegram import (
+    InlineKeyboardButton, 
+    ReplyKeyboardMarkup, 
+)
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, APIC, TIT2, TT2, TALB
 from mutagen.easyid3 import EasyID3
@@ -39,12 +17,13 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 PHOTO, AUDIO, = range(2)
 
 logger = logging.getLogger(__name__)
-# token = "2016260844:AAGwWwI6ZLA7cLUNNcAbbFz2W84wkJebZyo"
-# token = "2092105489:AAEHfZCr6xX5y4S3Bn4v0tVZJLIiND4t0NE"
-token = "378545358:AAHuQjkYspm0CYr-ZG9xF_h31CB7V-pF118"
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-# BOT_USERNAME = os.getenv("BOT_USERNAME")
+# token = "2016260844:AAGwWwI6ZLA7cLUNNcAbbFz2W84wkJebZyo" #@bot_project_1_bot
+# token = "2092105489:AAEHfZCr6xX5y4S3Bn4v0tVZJLIiND4t0NE" #@bot_project_2_bot
+# token = "537716476:AAF15wE57CU2P5AuRhYps9EWW2sX_YQXf0o" #@Arkanir_bot:
+# token = "434941139:AAG1Apadczm8qIT9AzT-E3BLRI9_wRIZtd4" #@yehamzabon_bot
+token = "378545358:AAHuQjkYspm0CYr-ZG9xF_h31CB7V-pF118" #@Mynameisahmad_bot
+# token = "353909760:AAEvjTzsEpcW3XjMcFwtMFvPh6qE1g3nszk" #@SaffronHajahmad_bot
 
 validation = {
     'first_name': 'لطفا نام خود را وارد کنید',
@@ -71,36 +50,6 @@ langs = [
     ]
 ]
 
-############
-# Handlers #
-############
-
-
-def command_start(update: Update, context: CallbackContext) -> None:
-    user_id = update.effective_user.id
-    username = update.effective_user.username
-
-    # reset_user_data_context(context)
-
-    # user = User.where('user_id', '=', user_id).first()
-
-    # update.message.reply_text(
-    #     translate_key_to(lp.START_MESSAGE, context.user_data['language']),
-    #     reply_markup=ReplyKeyboardRemove()
-    # )
-
-    # show_language_keyboard(update, context)
-
-    # if not user:
-    #     new_user = User()
-    #     new_user.user_id = user_id
-    #     new_user.username = username
-    #     new_user.number_of_files_sent = 0
-
-    #     new_user.save()
-
-    #     logger.info("A user with id %s has been started to use the bot.", user_id)
-
 def start(update: Update, context: CallbackContext):
     username = update.message.from_user
     logger.info("Name of User is %s", username)
@@ -111,32 +60,13 @@ def audio(update: Update, context: CallbackContext):
     global audio_file
     audio_file = update.message.audio.get_file()
     audio_file.download('user_music.mp3')
-
-    # audio = ID3('user_music.mp3')
-    # tags = audio.pprint()
-
     update.message.reply_text(validation['photo'])
-    # update.message.reply_text(tags, validation['audio'])
     return PHOTO
 
 def photo(update: Update, context: CallbackContext):
     global photo_file
     photo_file = update.message.photo[-1].get_file()
     photo_file.download('user_photo.png')
-
-    # imagedata = open('user_photo.png', 'rb').read()
-    # audio = eyed3.load('user_music.mp3')
-    # audio.tag.album_artist = u'Artist-Name'
-    # audio.tag.images.remove(u'')
-    # audio.tag.images.set(3, 'None', imagedata)
-    # audio.tag.save()
-
-    # imagedata = open('user_photo.png', 'rb').read()
-
-    # id3 = ID3('user_music.mp3', v2_version=3)
-    # id3.add(APIC(3, 'image/jpeg', 3, 'Front cover', imagedata))
-    # id3.add(TIT2(encoding=3, text='@Jojo_Musik'))
-    # id3.save(v2_version=3)
 
     audio = MP3('user_music.mp3', ID3=ID3)   
 
@@ -156,17 +86,16 @@ def photo(update: Update, context: CallbackContext):
         desc=u'Cover',
         data=open('user_photo.png', 'rb').read()
     ))
-    # audio.tags.add(TT2(encoding=3, text='سلام مصطفی حالت چطوره'))
-    # audio.tags.add(TALB(encoding=3, text='album'))
-    # audio.save()
-    # audio.add(TIT2(encoding=3, text='title'))
 
     audio.save(v2_version=3)
 
-    # logger.info(audio)
-
     chat_id = update.message.chat_id
-    context.bot.send_document(chat_id, document=open('user_music.mp3', 'rb'), caption='the video', thumb=open('user_photo.png', 'rb').read())
+    context.bot.send_document(
+        chat_id, 
+        document=open('user_music.mp3', 'rb'), 
+        caption='the video', 
+        thumb=open('user_photo.png', 'rb').read()
+    )
     update.message.reply_text(validation['thank_you'])
     update.message.reply_text(validation['audio'])
     return AUDIO
